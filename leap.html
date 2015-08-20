@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="https://js.leapmotion.com/leap-0.6.4.js"></script>
+	<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript">
+
+function concatData(id, data) {
+	return id + ":" + data  + "<br>";
+}
+
+function concatJointPosition(id, position){
+	return id + ":" + position[0] + "," + position[1] + "," + position[2] + "<br>";
+}
+var frameString = "", handString = "", fingerString = "";
+var hand, finger;
+
+//  Leap.loop
+var options = {enableGestures: true};
+
+data = [];
+
+Leap.loop(options, function(frame){
+	// frameString = concatData("frame_id", frame.id);
+	// frameString += concatData("num_hands", frame.hands.length);
+	// frameString += concatData("num_fingers", frame.fingers.length);
+	// frameString += "<br>";
+
+	for (var i = 0; i < frame.hands.length; i++) {
+		hand = frame.hands[i];
+
+		for (var j = 0; j < hand.palmNormal.length; j++) {
+			data.push(hand.palmNormal[j]);
+		};
+
+		for (var j = 0; j < hand.direction.length; j++) {
+			data.push(hand.direction[j]);
+		};
+
+		for (var j = 0; j < hand.fingers.length; j++) {
+			finger = hand.fingers[j];
+			for (var k = 0; k < finger.tipPosition.length; k++) {
+				data.push(finger.tipPosition[k]);
+			};
+			for (var k = 0; k < finger.direction.length; k++) {
+				data.push(finger.direction[k]);
+			};
+		};
+
+		data.push(hand.pinchStrength);
+		data.push(hand.grabStrength);
+		// handString = concatData('hand_type', hand.type);
+		// handString += concatData('pinch_strength', hand.pinchStrength);
+		// handString += concatData('grab_strength', hand.grabStrength);
+		// handString += concatData("confidence", hand.confidence);
+
+		// handString +="<br>";
+
+		// fingerString = "";
+		// for (var j = 0; j < hand.fingers.length; j++) {
+		// 	finger = hand.fingers[j];
+		// 	fingerString += concatData("finger_type", finger.type);
+		// 	fingerString += concatJointPosition("finger_dip", finger.dipPosition);
+  //         	fingerString += concatJointPosition("finger_pip", finger.pipPosition);
+  //         	fingerString += concatJointPosition("finger_mcp", finger.mcpPosition);
+		// 	fingerString += "<br>";
+		// };
+
+		// frameString += handString;
+		// frameString += fingerString;
+
+		var dirY = hand.direction[1];
+		var normX = hand.palmNormal[0];
+		var ringY = hand.ringFinger.direction[1];
+		
+		var mvmnt = Math.pow(hand.palmVelocity[0],2) + Math.pow(hand.palmVelocity[1],2) + Math.pow(hand.palmVelocity[2],2);
+		// console.log(dirY)
+
+		if (mvmnt < 3000) {
+			// if still
+			if (normX > 0.5) {
+				// fa
+				$('#output').html(4);
+			}
+			else if (hand.grabStrength >= 0.7) { 
+				// do
+				// if (normX < 0.5) {
+					$('#output').html(1);
+				// } else if (normX > 0.75) {
+				// 	// fa
+				// 	$('#output').html(4);
+				// }
+			}
+			else if (dirY > 0.25) {
+				// ray
+				if (ringY > 0) {
+					$('#output').html(2);
+				} else if (ringY < -0.75) {
+					// ti
+					$('#output').html(7);
+				}
+			} else if (dirY > -0.25) {
+				if (Math.abs(normX) < 0.75) {
+					// me
+					$('#output').html(3);
+				} else if (normX < -0.75) {
+					// soh
+					$('#output').html(5);
+				}
+			} else if (dirY <= -0.4) {
+				// la
+				$('#output').html(6);
+			}
+		}
+	};
+});
+	</script>
+</head>
+<body>
+	<h1></h1>
+	<div id="output">
+	</div>
+</body>
+</html>
