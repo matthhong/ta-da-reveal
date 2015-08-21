@@ -32,6 +32,12 @@
 		<!--[if lt IE 9]>
 		<script src="lib/js/html5shiv.js"></script>
 		<![endif]-->
+		<style type="text/css">
+			.note {
+				margin-left:0;
+				color: black;
+			}
+		</style>
 	</head>
 
 	<body>
@@ -44,14 +50,30 @@
 					<h1>Ta-da</h1>
 				</section>
 				<section>
-					<section id="do" data-background-iframe="http://threejs.org/examples/canvas_geometry_earth"></section>
-					<section id="ray" data-background-iframe="http://threejs.org/examples/webgl_postprocessing_godrays"></section>
-					<section id="me" data-background-iframe="http://threejs.org/examples/webgl_shaders_ocean.html"></section>
-					<section id="fa" data-background-iframe="http://threejs.org/examples/canvas_geometry_panorama_fisheye"></section>
-					<section id="so"></section>
-					<section id="la"></section>
-					<section id="ti" data-background-iframe="https://va3c.github.io/three.js/examples/canvas_geometry_birds.html"></section>
-					<section id="do" data-background-iframe="http://threejs.org/examples/canvas_geometry_earth"></section>
+					<section id="do1" data-background-iframe="http://threejs.org/examples/canvas_geometry_earth">
+						<span class="note">Note:</span>
+					</section>
+					<section id="re" data-background-iframe="http://threejs.org/examples/webgl_postprocessing_godrays">
+						<span class="note"></span>
+					</section>
+					<section id="mi" data-background-iframe="http://threejs.org/examples/webgl_shaders_ocean.html">
+						<span class="note"></span>
+					</section>
+					<section id="fa" data-background-iframe="http://threejs.org/examples/canvas_geometry_panorama_fisheye">
+						<span class="note"></span>
+					</section>
+					<section id="sol">
+						<span class="note"></span>
+					</section>
+					<section id="la">
+						<span class="note"></span>
+					</section>
+					<section id="ti" data-background-iframe="https://va3c.github.io/three.js/examples/canvas_geometry_birds.html">
+						<span class="note"></span>
+					</section>
+					<section id="do2" data-background-iframe="http://threejs.org/examples/canvas_geometry_earth">
+						<span class="note"></span>
+					</section>
 				</section>
 
 				<section>
@@ -388,6 +410,10 @@ Reveal.addEventListener( 'customevent', function() {
 		<script src="lib/js/head.min.js"></script>
 		<script src="js/reveal.js"></script>
 		<script src="js/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="js/p5.js"></script>
+		<script type="text/javascript" src="js/p5.sound.js"></script>
+		<script src="js/pitchdetect.js"></script>
+		<script type="text/javascript" src="js/record.js"></script>
 
 		<script>
 
@@ -398,6 +424,7 @@ Reveal.addEventListener( 'customevent', function() {
 				progress: false,
 				history: true,
 				center: true,
+				keyboard:false,
 
 				transition: 'slide', // none/fade/slide/convex/concave/zoom
 

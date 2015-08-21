@@ -131,17 +131,14 @@
 				}
 			} else if (state === 1) {
 				recorder.stop();
-				state++;
-				console.log('recording stopped')
-			} else if (state === 2) {
-				soundFile.play();
 				state = 0;
-				console.log('playing')
+				console.log('recording stopped')
 			}
 		}
 
 		if (keyCode === 80) {
 			soundFile.play();
+			console.log('playing')
 		}
 	}
 

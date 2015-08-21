@@ -35,7 +35,7 @@ var detectorElem,
 	canvasElem,
 	waveCanvas,
 	pitchElem,
-	noteElem,
+	// noteElem,
 	detuneElem,
 	detuneAmount;
 
@@ -61,7 +61,7 @@ window.onload = function() {
 		waveCanvas.lineWidth = 1;
 	}
 	pitchElem = document.getElementById( "pitch" );
-	noteElem = document.getElementById( "note" );
+	// noteElem = document.getElementById( "note" );
 	detuneElem = document.getElementById( "detune" );
 	detuneAmount = document.getElementById( "detune_amt" );
 
@@ -312,7 +312,6 @@ function autoCorrelate( buf, sampleRate ) {
 //	var best_frequency = sampleRate/best_offset;
 }
 
-// notes = [];
 function updatePitch( time ) {
 	var cycles = new Array;
 	analyser.getFloatTimeDomainData( buf );
@@ -346,7 +345,7 @@ function updatePitch( time ) {
  	if (ac == -1) {
  		detectorElem.className = "vague";
 	 	pitchElem.innerText = "--";
-		noteElem.innerText = "-";
+		// noteElem.innerText = "-";
 		detuneElem.className = "";
 		detuneAmount.innerText = "--";
  	} else {
@@ -355,6 +354,7 @@ function updatePitch( time ) {
 	 	pitchElem.innerText = Math.round( pitch ) ;
 	 	var note =  noteStrings[noteFromPitch( pitch )%12];
 		// noteElem.innerHTML = note;
+		// noteElem = $('#' + noteNow + " > .note");
 		if (state === 1) {
 			switch (noteNow) {
 				case 'do1':
