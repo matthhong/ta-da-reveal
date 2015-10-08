@@ -74,17 +74,72 @@ Leap.loop(options, function(frame){
 		var dirY = hand.direction[1];
 		var normX = hand.palmNormal[0];
 		var ringY = hand.ringFinger.direction[1];
+		var indexY = hand.indexFinger.direction[1];
+		var middleY = hand.middleFinger.direction[1];
+		var pinkyY = hand.pinky.direction[1];
+		var thumbZ = hand.thumb.direction[2];
+		var ringZ = hand.ringFinger.direction[2];
+
+		// console.log(thumbZ/ringZ);
+		// console.log(dirY)
+		// console.log(normX)
+		// console.log(hand.direction[1])
+		// console.log(ringZ)
+
+		// console.log(hand.grabStrength)
+		// console.log(thumbX);
 		
 		var mvmnt = Math.pow(hand.palmVelocity[0],2) + Math.pow(hand.palmVelocity[1],2) + Math.pow(hand.palmVelocity[2],2);
-		// console.log(dirY)
 
-		if (mvmnt < 3000) {
+		if (mvmnt < 2000) {
+			if (normX > 0.5) {
+				// Sideways
+				// FA
+				$('#output').html(4);
+			} else if (dirY <= -0.4) {
+					// Down
+					// Lah
+					$('#output').html(6);
+				} else if (thumbZ/ringZ > 0.5 && thumbZ/ringZ <1) {
+				// Open hand
+				if (normX < -0.75) {
+					// Sideways
+					// Soh 
+					$('#output').html(5);
+				} else if (dirY > 0.4) {
+					// Up
+					// RE
+					$('#output').html(2);
+				} else if (dirY > -0.25 && dirY < 0.25) {
+					// Middle
+					// ME
+					$('#output').html(3);
+				}
+			} else if (thumbZ/ringZ < -0.5 && dirY > 0.2) {
+				// Closed hand
+				// TI 
+				$('#output').html(7);
+			} else if (hand.grabStrength >= 0.6) {
+				// Fist 
+				// DO
+				$('#output').html(1);
+			} 
+		}
+
+				if (false) {
 			// if still
 			if (normX > 0.5) {
 				// fa
 				$('#output').html(4);
-			}
-			else if (hand.grabStrength >= 0.7) { 
+			} else if (dirY > 0.4) {
+				// ray
+				if (thumbZ/ringZ > 0.5 && thumbZ/ringZ <1) {
+					$('#output').html(2);
+				} else if ( thumbZ/ringZ < -0.5 ) {
+					// ti
+					$('#output').html(7);
+				}
+			} else if (hand.grabStrength >= 0.6) { 
 				// do
 				// if (normX < 0.5) {
 					$('#output').html(1);
@@ -92,22 +147,13 @@ Leap.loop(options, function(frame){
 				// 	// fa
 				// 	$('#output').html(4);
 				// }
-			}
-			else if (dirY > 0.25) {
-				// ray
-				if (ringY > 0) {
-					$('#output').html(2);
-				} else if (ringY < -0.75) {
-					// ti
-					$('#output').html(7);
-				}
-			} else if (dirY > -0.25) {
-				if (Math.abs(normX) < 0.75) {
-					// me
-					$('#output').html(3);
-				} else if (normX < -0.75) {
+			} else if (dirY > -0.25 && dirY < 0.25) {
+				if (normX < -0.75 && thumbZ/ringZ > 0.5 && thumbZ/ringZ <1) {
 					// soh
 					$('#output').html(5);
+				} else if (thumbZ/ringZ > 0) {
+					// me
+					$('#output').html(3);
 				}
 			} else if (dirY <= -0.4) {
 				// la

@@ -12,10 +12,15 @@ var soundFile,
 
 var notes = notesDo1 = notesRe = notesMi = notesFa = notesSol = notesLa = notesTi = notesDo2 = [];
 
-var noteNow = 'do1';
-var noteElem = $('#' + noteNow + " > .note")
+var noteNow = 'do2';
+var noteElem = $('#note');
+var tonicElem = $('#tonic-note');
+var recordingElem = $('.recording');
 
 var state = 0;
+var color = 'white';
+var steps;
+var sharpOrFlat = '';
 
 function setup() {
 	mic = new p5.AudioIn();
@@ -33,11 +38,8 @@ function setup() {
 	soundFileTi = new p5.SoundFile();
 	soundFileDo2 = new p5.SoundFile();
 
-	soundFile = soundFileDo1;
-	notes = notesDo1;
-
-	noteElem = $('#' + noteNow + " > .note");
-	console.log(noteElem)
+	soundFile = soundFileDo2;
+	notes = notesDo2;
 }
 
 function keyPressed() {
@@ -46,54 +48,54 @@ function keyPressed() {
 			soundFile = soundFileDo1;
 			notes = notesDo1;
 			noteNow = 'do1';
-			console.log('Do1')
+			Reveal.slide( 1, 7, 0 );
 			break;
 		case 50:
 			soundFile = soundFileRe;
 			notes = notesRe;
 			noteNow = 're';
-			console.log('Re')
+			Reveal.slide( 1, 6, 0 );
 			break;
 		case 51:
 			soundFile = soundFileMi;
 			notes = notesMi;
 			noteNow = 'mi';
-			console.log('Mi')
+			Reveal.slide( 1, 5, 0 );
 			break;
 		case 52:
 			soundFile = soundFileFa;
 			notes = notesFa;
 			noteNow = 'fa';
-			console.log('Fa')
+			Reveal.slide( 1, 4, 0 );
 			break;
 		case 53:
 			soundFile = soundFileSol;
 			notes = notesSol;
 			noteNow = 'sol';
-			console.log('Sol')
+			Reveal.slide( 1, 3, 0 );
 			break;
 		case 54:
 			soundFile = soundFileLa;
 			notes = notesLa;
 			noteNow = 'la';
-			console.log('La')
+			Reveal.slide( 1, 2, 0 );
 			break;
 		case 55:
 			soundFile = soundFileTi;
 			notes = notesTi;
 			noteNow = 'ti';
-			console.log('Ti')
+			Reveal.slide( 1, 1, 0 );
 			break;
 		case 56:
 			soundFile = soundFileDo2;
 			notes = notesDo2;
 			noteNow = 'do2';
-			console.log('Do2')
+			Reveal.slide( 1, 0, 0 );
 			break;
 	}
 
 	if (keyCode === 82) {
-		if (keyCode === 82 && state === 0 && mic.enabled) {
+		if (state === 0 && mic.enabled) {
 			recorder.record(soundFile);
 			state++;
 			console.log('recording')
@@ -136,7 +138,63 @@ function keyPressed() {
 	}
 }
 
+// Fix modulo behavior
+Number.prototype.mod = function(n) {
+    return ((this%n)+n)%n;
+};
+
 function draw() {
-	// console.log(noteElem)
-	noteElem.html(mode(notes));
+	switch (noteNow) {
+		case 'do1':
+			steps = 0;
+			break;
+		case 're':
+			steps = 10;
+			break;
+		case 'mi':
+			steps = 8;
+			break;
+		case 'fa':
+			steps = 7;
+			break;
+		case 'sol':
+			steps = 5;
+			break;
+		case 'la':
+			steps = 3;
+			break;
+		case 'ti':
+			steps = 1;
+			break;
+		case 'do2':
+			steps = 0;
+			break;
+		}
+
+	if (noteStrings[mode(notes)] != undefined) {
+		if (mode(notes) !== ((((mode(notesDo2) - steps) % 12) + 12) % 12)) {
+			color = 'red';
+			if (mode(notes) > ((((mode(notesDo2) - steps) % 12) + 12) % 12)) {
+				sharpOrFlat = ' +';
+			} else {
+				sharpOrFlat = ' -';
+			}
+		} else { 
+			sharpOrFlat = '';
+			color = 'white'; 
+		}
+
+		noteElem.html(noteStrings[mode(notes)].concat(sharpOrFlat))
+			.css({'color':color});
+	} else {
+		noteElem.html('');
+	}
+
+	tonicElem.html(noteStrings[mode(notesDo2)]);
+
+	if (state === 0) {
+		recordingElem.html('Press R to record. <em>When in doubt, go back to</em> do.');
+	} else {
+		recordingElem.html('Press R to stop recording.');
+	}
 }

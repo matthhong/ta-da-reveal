@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>So</title>
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<script type="text/javascript" src="js/three.min.js"></script>
+	<script src='js/THREEx.js'></script>
+	<script src='js/OrbitControls.js'></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.1.1/chroma.min.js"></script>
+	<script type="text/javascript">
+	var width = window.innerWidth;
+	var height = window.innerHeight;
+
+	var container;
+
+	container = document.createElement( 'div' );
+	document.body.appendChild( container );
+
+	var renderer = new THREE.WebGLRenderer({ alpha: true });
+	renderer.setPixelRatio( window.devicePixelRatio );
+	renderer.setSize(width, height);
+
+	container.appendChild( renderer.domElement );
+
+	var scene = new THREE.Scene();
+
+	var viewAngle = 45;
+	var aspect = width / height;
+	var near = 0.1;
+	var far = 10000;
+
+	var scale = chroma.scale([0xA7B19C, 0xA2AD60, 0xA35020]).domain([0, 10, 50]);
+
+	// scene.add( new THREE.AmbientLight( 0x111111 ) );
+
+	directionalLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
+	directionalLight.position.set( 500, 2000, 0 );
+	scene.add( directionalLight );
+
+	pointLight = new THREE.PointLight( 0xff4400, 1.5 );
+	pointLight.position.set( 0, 100, -200 );
+	scene.add( pointLight );
+	var hemiLight = new THREE.HemisphereLight( 0xf6b757, 0x9DC0DB, 1.2 );
+	hemiLight.color.setHSL( 0.6, 1, 0.6 );
+	hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+	hemiLight.position.set( 0, 1000, 0 );
+	scene.add( hemiLight );
+
+	camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.5, 2000000 );
+
+				camera.position.y = 80;
+				camera.position.z = 300;
+				camera.setLens(20);
+
+	THREEx.WindowResize(renderer, camera);
+
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+    createGeometryFromMap();
+
+    render();
+
+
+    function createGeometryFromMap() {
+        var depth = 512;
+        var width = 512;
+        var spacingX = 3;
+        var spacingZ = 3;
+        var heightOffset = 2;
+        var canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        var ctx = canvas.getContext('2d');
+        var img = new Image();
+        img.src = "../img/grandcanyon.png";
+        img.onload = function () {
+            // draw on canvas
+            ctx.drawImage(img, 0, 0);
+            var pixel = ctx.getImageData(0, 0, width, depth);
+            var geom = new THREE.Geometry;
+            var output = [];
+            for (var x = 0; x < depth; x++) {
+                for (var z = 0; z < width; z++) {
+                    // get pixel
+                    // since we're grayscale, we only need one element
+                    var yValue = pixel.data[z * 4 + (depth * x * 4)] / heightOffset;
+                    var vertex = new THREE.Vector3(x * spacingX, yValue, z * spacingZ);
+                    geom.vertices.push(vertex);
+                }
+            }
+            // we create a rectangle between four vertices, and we do
+            // that as two triangles.
+            for (var z = 0; z < depth - 1; z++) {
+                for (var x = 0; x < width - 1; x++) {
+                    // we need to point to the position in the array
+                    // a - - b
+                    // |  x  |
+                    // c - - d
+                    var a = x + z * width;
+                    var b = (x + 1) + (z * width);
+                    var c = x + ((z + 1) * width);
+                    var d = (x + 1) + ((z + 1) * width);
+                    var face1 = new THREE.Face3(a, b, d);
+                    var face2 = new THREE.Face3(d, c, a);
+
+                    face1.color = new THREE.Color(scale(getHighPoint(geom, face1)).hex());
+                    face2.color = new THREE.Color(scale(getHighPoint(geom, face2)).hex());
+
+                    geom.faces.push(face1);
+                    geom.faces.push(face2);
+                }
+            }
+            geom.computeVertexNormals(true);
+            geom.computeFaceNormals();
+            geom.computeBoundingBox();
+            var zMax = geom.boundingBox.max.z;
+            var xMax = geom.boundingBox.max.x;
+            var mesh = new THREE.Mesh(geom, new THREE.MeshLambertMaterial({
+            	vertexColors: THREE.FaceColors,
+                color: 0x666666,
+                shading: THREE.NoShading
+            }));
+            mesh.rotateY(45);
+            mesh.translateX(-xMax / 2);
+            mesh.translateZ(-zMax / 2);
+            scene.add(mesh);
+            mesh.name = 'valley';
+        };
+    }
+
+    function getHighPoint(geometry, face) {
+        var v1 = geometry.vertices[face.a].y;
+        var v2 = geometry.vertices[face.b].y;
+        var v3 = geometry.vertices[face.c].y;
+        return Math.max(v1, v2, v3);
+    }
+
+    function render() {
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
+    }
+	</script>
+</body>
+</html>
